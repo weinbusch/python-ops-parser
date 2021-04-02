@@ -172,6 +172,7 @@ def test_divisionals_and_parents(ep00102678):
             "country": "EP",
             "number": "19970933047",
             "kind": "D",
+            "date": None,
         }
     ]
 
@@ -179,6 +180,7 @@ def test_divisionals_and_parents(ep00102678):
         "country": "EP",
         "number": "20000114764",
         "kind": "D",
+        "date": None,
     }
 
     assert [x["number"] for x in bib["child_applications"]] == [
@@ -247,6 +249,5 @@ def test_dossier_event(event_data):
 """Parse register search output"""
 
 
-@pytest.mark.skip()
 def test_register_search(register_search):
     pass

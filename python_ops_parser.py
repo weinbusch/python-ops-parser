@@ -58,7 +58,7 @@ def patent_status(node):
     return {
         "date": node.attrib.get("change-date", ""),
         "code": node.attrib.get("status-code", ""),
-        "text": node.text.strip() if node.text else "",
+        "text": get_text(node),
     }
 
 
@@ -120,7 +120,7 @@ def bibliographic_data(bib):
 
     for x in bib.findall("reg:invention-title", ns):
         name = "title_" + x.attrib["lang"]
-        data[name] = x.text.strip()
+        data[name] = get_text(x)
 
     data["citations"] = [
         citation(x) for x in bib.findall("reg:references-cited/reg:citation", ns)
@@ -165,10 +165,10 @@ def citation(node):
         else:
             raise Exception("Citation node lacks patcit and nplcit nodes")
     cited_phase = node.attrib.get("cited-phase", "")
-    category = node.find("reg:category", ns).text.strip()
+    category = get_text(node.find("reg:category", ns))
     doi_node = node.find("reg:doi", ns)
     if doi_node is not None:
-        doi = doi_node.text.strip()
+        doi = get_text(doi_node)
     else:
         doi = ""
     document["doi"] = doi
@@ -188,23 +188,22 @@ def patcit(node):
 
 def nplcit(node):
     text_node = node.find("reg:text", ns)
-    text = text_node.text.strip() if text_node is not None else ""
+    text = get_text(text_node) if text_node is not None else ""
     return {"publication_type": "npl", "text": text}
 
 
 def document_id(node):
     res = {
-        "country": node.find("reg:country", ns).text.strip(),
-        "number": node.find("reg:doc-number", ns).text.strip(),
+        "country": get_text(node.find("reg:country", ns)),
+        "number": get_text(node.find("reg:doc-number", ns)),
     }
 
     date_node = node.find("reg:date", ns)
-    if date_node is not None:
-        res["date"] = date(date_node)
+    res["date"] = date(date_node)
 
     kind_node = node.find("reg:kind", ns)
     if kind_node is not None:
-        res["kind"] = kind_node.text.strip()
+        res["kind"] = get_text(kind_node)
 
     return res
 
@@ -232,14 +231,14 @@ def agent(node):
 
 
 def addressbook(node):
-    name = node.find("reg:name", ns).text.strip()
+    name = get_text(node.find("reg:name", ns))
     addr = address(node.find("reg:address", ns))
-    country = node.find("reg:address/reg:country", ns).text.strip()
+    country = get_text(node.find("reg:address/reg:country", ns))
     return {"name": name, "address": addr, "country": country}
 
 
 def address(node):
-    return "\n".join(x.text.strip() for x in node if "address" in x.tag)
+    return "\n".join(get_text(x) for x in node if "address" in x.tag)
 
 
 """Events"""
@@ -404,6 +403,10 @@ step_parsers = {
 """Helpers"""
 
 
+def get_text(node):
+    return node.text.strip() if node.text else ""
+
+
 def procedural_step_date(node, name):
     el = node.find(
         "reg:procedural-step-date[@step-date-type='{}']/reg:date".format(name), ns
@@ -421,4 +424,6 @@ def time_limit(node):
 
 
 def date(node):
-    return datetime.datetime.strptime(node.text.strip(), "%Y%m%d").date()
+    if node is None:
+        return None
+    return datetime.datetime.strptime(get_text(node), "%Y%m%d").date()
