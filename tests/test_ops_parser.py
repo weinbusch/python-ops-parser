@@ -249,5 +249,16 @@ def test_dossier_event(event_data):
 """Parse register search output"""
 
 
-def test_register_search(register_search):
-    pass
+def test_register_search_number_of_documents(register_search):
+    register_documents = register_search["register_search"]["register_documents"]
+    assert len(register_documents) == 25
+
+
+def test_register_search_first_document(register_search):
+    doc = register_search["register_search"]["register_documents"][0]
+    assert doc["bibliographic_data"]["application_number"] == "15171792"
+    assert doc["bibliographic_data"]["applicants"][0][0]["name"] == "BASF SE"
+    assert (
+        doc["bibliographic_data"]["title_de"]
+        == "DI(ALKYLGLYKOSID)SULFOMETHYLSUCCINAT TENSIDE"
+    )
