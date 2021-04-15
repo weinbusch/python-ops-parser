@@ -25,11 +25,16 @@ def world_patent_data(root):
 
 
 def register_search(node):
+    range_node = node.find("ops:range", ns)
+    query_range = (int(range_node.attrib["begin"]), int(range_node.attrib["end"]))
     return {
         "register_documents": [
             register_document(x)
             for x in node.findall("reg:register-documents/reg:register-document", ns)
-        ]
+        ],
+        "count": int(node.attrib["total-result-count"]),
+        "query": get_text(node.find("ops:query", ns)),
+        "range": query_range,
     }
 
 

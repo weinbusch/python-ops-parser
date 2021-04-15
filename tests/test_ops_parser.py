@@ -262,3 +262,15 @@ def test_register_search_first_document(register_search):
         doc["bibliographic_data"]["title_de"]
         == "DI(ALKYLGLYKOSID)SULFOMETHYLSUCCINAT TENSIDE"
     )
+
+
+def test_total_result_count(register_search):
+    assert register_search["register_search"]["count"] == 1924
+
+
+def test_query(register_search):
+    assert register_search["register_search"]["query"] == "pa=bosch and pd=2015"
+
+
+def test_range(register_search):
+    assert register_search["register_search"]["range"] == (1, 25)
