@@ -11,6 +11,7 @@ SAMPLE_DIR = "tests/samples"
 SAMPLES = [
     "00102678",
     "99203729",
+    "00970155",
     "register_search",
 ]
 
