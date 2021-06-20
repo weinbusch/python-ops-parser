@@ -201,6 +201,7 @@ def document_id(node):
     res = {
         "country": get_text(node.find("reg:country", ns)),
         "number": get_text(node.find("reg:doc-number", ns)),
+        "kind": "",
     }
 
     date_node = node.find("reg:date", ns)
@@ -303,9 +304,11 @@ def adwi(node):
     """Application deemed to be withdrawn"""
     effective = procedural_step_date(node, "DATE_EFFECTIVE")
     dispatch = procedural_step_date(node, "DATE_OF_DISPATCH")
-    reason = node.find(
-        "reg:procedural-step-text[@step-text-type='STEP_DESCRIPTION_NAME']", ns
-    ).text
+    reason = get_text(
+        node.find(
+            "reg:procedural-step-text[@step-text-type='STEP_DESCRIPTION_NAME']", ns
+        )
+    )
     return {"dispatch": dispatch, "reason": reason, "effective": effective}
 
 
@@ -332,9 +335,9 @@ def igra(node):
 
 
 def isat(node):
-    authority = node.find(
-        "reg:procedural-step-text[@step-text-type='searching authority']", ns
-    ).text
+    authority = get_text(
+        node.find("reg:procedural-step-text[@step-text-type='searching authority']", ns)
+    )
     return {"authority": authority}
 
 
@@ -360,9 +363,9 @@ def opex(node):
 
 
 def prol(node):
-    language = node.find(
-        "reg:procedural-step-text[@step-text-type='procedure language']", ns
-    ).text
+    language = get_text(
+        node.find("reg:procedural-step-text[@step-text-type='procedure language']", ns)
+    )
     return {"language": language}
 
 
@@ -409,7 +412,7 @@ step_parsers = {
 
 
 def get_text(node):
-    return node.text.strip() if node.text else ""
+    return node.text.strip() if node is not None and node.text else ""
 
 
 def procedural_step_date(node, name):
