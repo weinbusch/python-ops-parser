@@ -7,6 +7,12 @@ from .samples import SAMPLES, SAMPLE_DIR
 
 """Fixtures"""
 
+if not all(os.path.exists(os.path.join(SAMPLE_DIR, f"{name}.xml")) for name in SAMPLES):
+    pytest.skip(
+        f"I could not find all sample files in {SAMPLE_DIR!r}. Please download them first.",
+        allow_module_level=True,
+    )
+
 
 @pytest.fixture(scope="session")
 def xmlsamples():
