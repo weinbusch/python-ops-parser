@@ -7,15 +7,14 @@ from .samples import SAMPLES, SAMPLE_DIR
 
 """Fixtures"""
 
-if not all(os.path.exists(os.path.join(SAMPLE_DIR, f"{name}.xml")) for name in SAMPLES):
-    pytest.skip(
-        f"I could not find all sample files in {SAMPLE_DIR!r}. Please download them first.",
-        allow_module_level=True,
-    )
-
 
 @pytest.fixture(scope="session")
 def xmlsamples():
+    if not all(os.path.exists(os.path.join(SAMPLE_DIR, f"{name}.xml")) for name in SAMPLES):
+        pytest.skip(
+            f"I could not find all sample files in {SAMPLE_DIR!r}. "
+            "Please download them first."
+        )
     return {
         name: open(os.path.join(SAMPLE_DIR, f"{name}.xml"), encoding="utf-8").read()
         for name in SAMPLES
@@ -155,7 +154,7 @@ def test_citation_patent_literature(bibliographic_data):
     assert d["country"] == "EP"
     assert d["number"] == "0680812"
     assert d["url"].startswith(
-        "http://worldwide.espacenet.com/publicationDetails/biblio"
+        "https://worldwide.espacenet.com"
     )
 
 
