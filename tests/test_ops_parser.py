@@ -23,8 +23,7 @@ def xmlsamples():
 
 @pytest.fixture(scope="session")
 def register_document(xmlsamples):
-    tree = parser.xml_tree(xmlsamples["99203729"])
-    data = parser.world_patent_data(tree)
+    data = parser.from_string(xmlsamples["99203729"])
     return data["register_search"]["register_documents"][0]
 
 
@@ -46,15 +45,13 @@ def event_data(register_document):
 @pytest.fixture(scope="session")
 def ep00102678(xmlsamples):
     xml_string = xmlsamples["00102678"]
-    tree = parser.xml_tree(xml_string)
-    data = parser.world_patent_data(tree)
+    data = parser.from_string(xml_string)
     return data["register_search"]["register_documents"][0]
 
 
 @pytest.fixture(scope="session")
 def register_search(xmlsamples):
-    tree = parser.xml_tree(xmlsamples["register_search"])
-    data = parser.world_patent_data(tree)
+    data = parser.from_string(xmlsamples["register_search"])
     yield data
 
 

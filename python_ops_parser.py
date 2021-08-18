@@ -14,8 +14,9 @@ ns = {
 }
 
 
-def xml_tree(xmlstring):
-    return ET.fromstring(xmlstring)
+def from_string(xmlstring):
+    root = ET.fromstring(xmlstring)
+    return world_patent_data(root)
 
 
 def world_patent_data(root):
