@@ -1,0 +1,5 @@
+black
+flake8
+pytest
+python-epo-ops-client
+python-ops-client-wrapper

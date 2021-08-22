@@ -10,6 +10,11 @@ from .samples import SAMPLES, SAMPLE_DIR
 
 @pytest.fixture(scope="session")
 def xmlsamples():
+    if not all(os.path.exists(os.path.join(SAMPLE_DIR, f"{name}.xml")) for name in SAMPLES):
+        pytest.skip(
+            f"I could not find all sample files in {SAMPLE_DIR!r}. "
+            "Please download them first."
+        )
     return {
         name: open(os.path.join(SAMPLE_DIR, f"{name}.xml"), encoding="utf-8").read()
         for name in SAMPLES
@@ -18,8 +23,7 @@ def xmlsamples():
 
 @pytest.fixture(scope="session")
 def register_document(xmlsamples):
-    tree = parser.xml_tree(xmlsamples["99203729"])
-    data = parser.world_patent_data(tree)
+    data = parser.from_string(xmlsamples["99203729"])
     return data["register_search"]["register_documents"][0]
 
 
@@ -41,15 +45,13 @@ def event_data(register_document):
 @pytest.fixture(scope="session")
 def ep00102678(xmlsamples):
     xml_string = xmlsamples["00102678"]
-    tree = parser.xml_tree(xml_string)
-    data = parser.world_patent_data(tree)
+    data = parser.from_string(xml_string)
     return data["register_search"]["register_documents"][0]
 
 
 @pytest.fixture(scope="session")
 def register_search(xmlsamples):
-    tree = parser.xml_tree(xmlsamples["register_search"])
-    data = parser.world_patent_data(tree)
+    data = parser.from_string(xmlsamples["register_search"])
     yield data
 
 
@@ -149,7 +151,7 @@ def test_citation_patent_literature(bibliographic_data):
     assert d["country"] == "EP"
     assert d["number"] == "0680812"
     assert d["url"].startswith(
-        "http://worldwide.espacenet.com/publicationDetails/biblio"
+        "https://worldwide.espacenet.com"
     )
 
 
@@ -262,3 +264,15 @@ def test_register_search_first_document(register_search):
         doc["bibliographic_data"]["title_de"]
         == "DI(ALKYLGLYKOSID)SULFOMETHYLSUCCINAT TENSIDE"
     )
+
+
+def test_total_result_count(register_search):
+    assert register_search["register_search"]["count"] == 1924
+
+
+def test_query(register_search):
+    assert register_search["register_search"]["query"] == "pa=bosch and pd=2015"
+
+
+def test_range(register_search):
+    assert register_search["register_search"]["range"] == (1, 25)

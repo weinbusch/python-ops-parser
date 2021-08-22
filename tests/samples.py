@@ -1,7 +1,5 @@
 import os
 
-import click
-
 import epo_ops
 from python_ops_client_wrapper import ops_client
 
@@ -11,13 +9,9 @@ SAMPLE_DIR = "tests/samples"
 SAMPLES = [
     "00102678",
     "99203729",
+    "00970155",
     "register_search",
 ]
-
-
-@click.group()
-def cli():
-    pass
 
 
 def register_search(client, cql):
@@ -40,15 +34,7 @@ def save_data(filename, data):
         f.write(data)
 
 
-def quote(s):
-    """quote string if it contains whitespace"""
-    if " " in s:
-        return f'"{s}"'
-    return s
-
-
-@cli.command()
-def download_all():
+def download():
     client = ops_client()
 
     if not os.path.isdir(SAMPLE_DIR):
@@ -63,11 +49,6 @@ def download_all():
         print(f"downloaded {name}")
 
 
-@cli.command()
-@click.argument("cql", nargs=-1, required=True)
-def search(cql):
-    client = ops_client()
-    cql = " ".join(quote(s) for s in cql)
-    print(cql)
-    data = register_search(client, cql)
-    click.echo(data)
+if __name__ == "__main__":
+    print("Downloading sample data from EPO OPS ...")
+    download()
